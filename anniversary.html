@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毛毛 & 咚咚 两周年快乐 ❤️</title>
+    <style>
+        :root {
+            --primary-color: #ff758c;
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 动态渐变背景 */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            overflow: hidden; /* 防止身体滚动，只让相册滚动 */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 悬浮音乐播放器 */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .music-icon {
+            font-size: 1.2rem;
+            animation: rotate 3s linear infinite;
+            display: inline-block;
+            animation-play-state: paused;
+        }
+
+        .playing .music-icon { animation-play-state: running; }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .play-btn {
+            background: #ff758c;
+            border: none;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        /* 主容器 */
+        .container {
+            width: 92%;
+            max-width: 700px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .heart {
+            color: #ff4d4d;
+            display: inline-block;
+            animation: beat 1s infinite alternate;
+        }
+
+        @keyframes beat { to { transform: scale(1.2); } }
+
+        /* 计时器 */
+        .timer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .timer-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 12px;
+            min-width: 65px;
+        }
+
+        .timer-item span { display: block; font-size: 1.4rem; font-weight: bold; }
+        .timer-item label { font-size: 0.7rem; opacity: 0.8; }
+
+        .message-box {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        /* 照片墙滚动区域 */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            max-height: 45vh; /* 限制高度在屏幕的一半左右 */
+            overflow-y: auto; /* 开启内部滚动 */
+            padding: 10px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* 美化滚动条 */
+        .photo-grid::-webkit-scrollbar { width: 5px; }
+        .photo-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+        .photo-card {
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-card:hover { transform: scale(1.05); }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 音乐控制 -->
+    <div class="music-player" id="musicPlayer">
+        <span class="music-icon">🎵</span>
+        <audio id="bgm" loop>
+            <source src="music.mp3" type="audio/mpeg">
+        </audio>
+        <button class="play-btn" onclick="toggleMusic()" id="playBtn">点我点我点我！</button>
+    </div>
+
+    <div class="container">
+        <h1>2<sup>nd</sup> Anniversary <span class="heart">❤️</span></h1>
+        
+        <div class="message-box">
+            “从遇见你的那一刻起，星河皆为你沉沦。<br>
+            两年的时间，感谢你一直在我身边。”
+        </div>
+
+        <div class="timer">
+            <div class="timer-item"><span id="days">00</span><label>天</label></div>
+            <div class="timer-item"><span id="hours">00</span><label>时</label></div>
+            <div class="timer-item"><span id="minutes">00</span><label>分</label></div>
+            <div class="timer-item"><span id="seconds">00</span><label>秒</label></div>
+        </div>
+
+        <!-- 照片滚动墙 -->
+        <div class="photo-grid">
+            <div class="photo-card"><img src="images/1.JPEG"></div>
+            <div class="photo-card"><img src="images/2.JPEG"></div>
+            <div class="photo-card"><img src="images/3.JPEG"></div>
+            <div class="photo-card"><img src="images/4.jpg"></div>
+            <div class="photo-card"><img src="images/5.jpg"></div>
+            <div class="photo-card"><img src="images/6.jpg"></div>
+            <div class="photo-card"><img src="images/7.jpg"></div>
+            <div class="photo-card"><img src="images/8.jpg"></div>
+            <div class="photo-card"><img src="images/9.jpg"></div>
+            <div class="photo-card"><img src="images/10.jpg"></div>
+            <div class="photo-card"><img src="images/11.jpg"></div>
+            <div class="photo-card"><img src="images/12.jpg"></div>
+            <div class="photo-card"><img src="images/13.jpg"></div>
+            <div class="photo-card"><img src="images/14.jpg"></div>
+            <div class="photo-card"><img src="images/15.jpg"></div>
+            <div class="photo-card"><img src="images/16.jpg"></div>
+            <div class="photo-card"><img src="images/17.jpg"></div>
+            <div class="photo-card"><img src="images/18.jpg"></div>
+            <div class="photo-card"><img src="images/19.jpg"></div>
+            <div class="photo-card"><img src="images/20.jpg"></div>
+            <div class="photo-card"><img src="images/21.jpg"></div>
+            <div class="photo-card"><img src="images/22.jpg"></div>
+            <div class="photo-card"><img src="images/23.jpg"></div>
+            <div class="photo-card"><img src="images/24.jpg"></div>
+            <div class="photo-card"><img src="images/25.jpg"></div>
+            <div class="photo-card"><img src="images/26.jpg"></div>
+            <div class="photo-card"><img src="images/27.jpg"></div>
+            <div class="photo-card"><img src="images/28.jpg"></div>
+            <div class="photo-card"><img src="images/29.jpg"></div>
+            <div class="photo-card"><img src="images/30.jpg"></div>
+            <div class="photo-card"><img src="images/31.jpg"></div>
+            <div class="photo-card"><img src="images/32.png"></div>
+        </div>
+
+        <footer>
+            Designed with Love | 2024 - 2026<br>
+            Forever maomao & dongdong
+        </footer>
+    </div>
+
+    <script>
+        // 1. 计时器逻辑 (2024年4月6日)
+        const startDate = new Date(2024, 3, 6, 0, 0, 0); 
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff / 3600000) % 24);
+            const m = Math.floor((diff / 60000) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('days').innerText = d;
+            document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // 2. 音乐控制逻辑
+        const bgm = document.getElementById('bgm');
+        const playBtn = document.getElementById('playBtn');
+        const musicPlayer = document.getElementById('musicPlayer');
+
+        function toggleMusic() {
+            if (bgm.paused) {
+                bgm.play().catch(e => alert("请点击页面任意位置后再次尝试播放音乐"));
+                playBtn.innerText = "PAUSE";
+                musicPlayer.classList.add('playing');
+            } else {
+                bgm.pause();
+                playBtn.innerText = "PLAY";
+                musicPlayer.classList.remove('playing');
+            }
+        }
+
+        // 监听整个页面的点击事件
+document.body.addEventListener('click', function() {
+    const bgm = document.getElementById('bgm');
+    if (bgm.paused) {
+        bgm.play();
+        // 播放后可以改变按钮状态或移除监听，防止重复触发
+    }
+}, { once: true }); // once: true 表示这个点击监听只执行一次
+
+document.addEventListener("WeixinJSBridgeReady", function () {
+    document.getElementById('bgm').play();
+}, false);
+    </script>
+</body>
+</html>
